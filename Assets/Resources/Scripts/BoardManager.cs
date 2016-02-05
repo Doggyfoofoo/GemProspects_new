@@ -10,6 +10,18 @@ public class BoardManager : MonoBehaviour {
 	private Transform boardHolder;      //A variable to store a reference to the transform of our Board object.
 										// use  instance.transform.SetParent (boardHolder); to put all board objects under the BoardManager
 
+	public GameObject[] floorTiles;
+
+	private int tileOffset; 
+	private int boardSize = 20; 
+
+	private GameObject[,] boardTiles; 
+
+
+	public int  GetBoardSize(){
+		return boardSize;
+	}
+
 	// Use this for initialization
 	void Awake () {
 		
@@ -29,6 +41,32 @@ public class BoardManager : MonoBehaviour {
 		DontDestroyOnLoad(gameObject);
 
 		boardHolder = this.transform;
+
+		boardTiles = new GameObject[boardSize, boardSize];
+
+		SetUpBoard ();
+	}
+
+
+	private void SetUpBoard(){
+
+		for (int i = 0; i< boardSize; i++) {
+
+			for (int j = 0; j< boardSize; j++) {
+
+				//floortiles are populated through the heirarchy 
+				GameObject toInstantiate = floorTiles[Random.Range (0,floorTiles.Length)];
+
+				GameObject instance =
+					Instantiate (toInstantiate, new Vector3 (i, j, 0f), Quaternion.identity) as GameObject;
+
+				boardTiles [i,j] = instance; 
+				instance.transform.SetParent (boardHolder);
+
+			}
+		}
+
+
 	}
 	
 	// Update is called once per frame

@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour {
 
 	public static GameManager instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
 
+	private GameObject mainCamera; 
+
 	void Awake()
 	{
 		//Check if instance already exists
@@ -22,22 +24,16 @@ public class GameManager : MonoBehaviour {
 
 		//Sets this to not be destroyed when reloading scene
 		DontDestroyOnLoad(gameObject);
-
-
-		//Call the InitGame function to initialize the first level 
-		InitGame();
-	}
-
-	void InitGame(){
-
-
 	}
 
 
-	// Use this for initialization
-	//void Start () {
-	
-	//}
+	//initialize things after the awake functions are all called
+	void Start () {
+		//camera 
+		mainCamera = GameObject.Find("Main Camera"); 
+		int boardCenter = (BoardManager.instance.GetBoardSize ())/2;
+		mainCamera.transform.position = new Vector3 (boardCenter, boardCenter, -10);
+	}
 	
 	// Update is called once per frame
 	void Update () {

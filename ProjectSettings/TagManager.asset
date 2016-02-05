@@ -44,12 +44,15 @@ TagManager:
   - name: FloorTiles
     uniqueID: 1890101687
     locked: 0
-  - name: Player
-    uniqueID: 3303104113
+  - name: Fog
+    uniqueID: 2267796135
     locked: 0
   - name: Improvements
     uniqueID: 2504201257
     locked: 0
-  - name: Fog
-    uniqueID: 2267796135
+  - name: Workers
+    uniqueID: 179665403
+    locked: 0
+  - name: Player
+    uniqueID: 3303104113
     locked: 0
