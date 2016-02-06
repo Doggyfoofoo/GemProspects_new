@@ -13,13 +13,15 @@ public class BoardManager : MonoBehaviour {
 	public GameObject[] floorTiles;
 
 	private int tileOffset; 
-	private int boardSize = 20;  // 20x20 board
+	private static int boardSize = 20;  // 20x20 board
 	private int minDeposits = 20; 
 	private int maxDeposits = 40; 
 
 	private List<Vector2> emptyGridPositions = new List <Vector2> (); 
 
-	private GameObject[,] boardTiles; 
+	private GameObject[,] boardTiles = new GameObject[boardSize, boardSize];
+	private GameObject[,] fogTiles = new GameObject[boardSize, boardSize];
+
 	private Dictionary<Vector2, MineralDeposit> mineralDepositsOnBoard = new Dictionary<Vector2, MineralDeposit>(); 
 
 	enum Gems {emerald, ruby, sapphire, amethyst, citrine, opal, topaz, morganite}; 
@@ -27,11 +29,20 @@ public class BoardManager : MonoBehaviour {
 	public class MineralDeposit
 	{
 		public int GemType = -1;
+		Player owner = null; 
 		bool hasMine = false; 
 		bool isOperational = false; //being mined by miners
 
 		public MineralDeposit(){
 			GemType = (int) Random.Range(0, System.Enum.GetNames(typeof(Gems)).Length);
+		}
+
+		public void SetOwner(Player newOwner){
+			owner = newOwner; 
+		}
+
+		public Player GetOwner(){
+			return owner; 
 		}
 
 		public void BuildMine(){
@@ -81,9 +92,23 @@ public class BoardManager : MonoBehaviour {
 
 		boardHolder = this.transform;
 
-		boardTiles = new GameObject[boardSize, boardSize];
-
 		SetUpBoard ();
+	}
+
+	public void DispelFog(Transform playerPosition){
+
+		for (int i = -1; i < 2; i++) {
+			for (int j = -1; j < 2; j++) {
+
+				int xPos = i + (int) playerPosition.position.x; 
+				int yPos = j + (int) playerPosition.position.y;
+
+				if ((fogTiles[xPos, yPos] != null)) {
+					Destroy (fogTiles [xPos, yPos]); 
+					fogTiles [xPos, yPos] = null; 
+				}
+			}
+		}
 	}
 
 
@@ -95,13 +120,18 @@ public class BoardManager : MonoBehaviour {
 			for (int j = 0; j< boardSize; j++) {
 
 				//floortiles are populated through the heirarchy 
-				GameObject toInstantiate = floorTiles[Random.Range (0,floorTiles.Length)];
+				GameObject floorTile = floorTiles[Random.Range (0,floorTiles.Length)];
 
 				GameObject instance =
-					Instantiate (toInstantiate, new Vector3 (i, j, 0f), Quaternion.identity) as GameObject;
+					Instantiate (floorTile, new Vector3 (i, j, 0f), Quaternion.identity) as GameObject;
 
 				boardTiles [i,j] = instance; 
 				instance.transform.SetParent (boardHolder);
+
+				GameObject fogTile = (GameObject) Resources.Load("Prefabs/black_fog"); 
+				GameObject fogInstance = Instantiate (fogTile, new Vector3 (i, j, 0f), Quaternion.identity) as GameObject;
+				fogTiles [i, j] = fogInstance;
+				fogInstance.transform.SetParent (boardHolder); 
 
 				emptyGridPositions.Add (new Vector2 (i,j));
 
@@ -128,10 +158,13 @@ public class BoardManager : MonoBehaviour {
 
 		for (int i = 0; i < numDeposits; i++) {
 			Vector2 randomPosition = RandomBoardPosition (); 
-			Instantiate (deposit, randomPosition, Quaternion.identity); 
+			GameObject instance = Instantiate (deposit, randomPosition, Quaternion.identity) as GameObject; 
+
+			instance.transform.SetParent (boardHolder); 
 
 			MineralDeposit mineralDeposit = new MineralDeposit (); 
-			mineralDepositsOnBoard.Add (randomPosition, mineralDeposit); 
+			mineralDepositsOnBoard.Add (randomPosition, mineralDeposit);
+
 		}
 	}
 
