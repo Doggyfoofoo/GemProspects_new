@@ -13,15 +13,20 @@ public class BoardManager : MonoBehaviour {
 	public GameObject[] floorTiles;
 
 	private int tileOffset; 
-	private int boardSize = 20; 
+	private int boardSize = 20;  // 20x20 board
+	private int minDeposits = 20; 
+	private int maxDeposits = 40; 
+
+	private List<Vector2> emptyGridPositions = new List <Vector2> (); 
 
 	private GameObject[,] boardTiles; 
+	private Dictionary<Vector2, MineralDeposit> mineralDepositsOnBoard = new Dictionary<Vector2, MineralDeposit>(); 
 
 	enum Gems {emerald, ruby, sapphire, amethyst, citrine, opal, topaz, morganite}; 
 
 	public class MineralDeposit
 	{
-		int GemType = -1;
+		public int GemType = -1;
 		bool hasMine = false; 
 		bool isOperational = false; //being mined by miners
 
@@ -51,29 +56,7 @@ public class BoardManager : MonoBehaviour {
 			}
 		}
 	}
-
-	public class Gem
-	{
-		private float gemSize = 0; // in Carats
-		private float gemValue = 0; 
-
-		public Gem(){
-			gemSize = 1/Random.Range(.1f, 20f);
-			gemValue = (float) (gemSize * 1000 + System.Math.Pow(4,gemSize)); 
-		}
-
-		public float GetGemSize(){
-			return (float) System.Math.Round (gemSize, 2); 
-		}
-
-		public float GetGemValue(){
-			return (float) System.Math.Round (gemValue, 2);
-		}
-	}
-
-
-
-
+		
 	public int  GetBoardSize(){
 		return boardSize;
 	}
@@ -106,6 +89,7 @@ public class BoardManager : MonoBehaviour {
 
 	private void SetUpBoard(){
 
+		emptyGridPositions.Clear (); 
 		for (int i = 0; i< boardSize; i++) {
 
 			for (int j = 0; j< boardSize; j++) {
@@ -119,12 +103,38 @@ public class BoardManager : MonoBehaviour {
 				boardTiles [i,j] = instance; 
 				instance.transform.SetParent (boardHolder);
 
+				emptyGridPositions.Add (new Vector2 (i,j));
+
 			}
 		}
 
-
+		//create mineral deposits
+		LayoutMineralDepositsOnBoard(minDeposits, maxDeposits); 
 	}
-	
+
+	Vector2 RandomBoardPosition(){
+
+		int randomIndex = Random.Range (0, emptyGridPositions.Count); 
+		Vector2 randomPosition = emptyGridPositions [randomIndex];
+		emptyGridPositions.RemoveAt(randomIndex);
+		return randomPosition; 
+	}
+
+	void LayoutMineralDepositsOnBoard(int minimum, int maximum){
+
+		int numDeposits = Random.Range (minimum, maximum + 1);
+		Debug.Log (numDeposits);
+		GameObject deposit = (GameObject) Resources.Load ("Prefabs/mineral_deposit1");
+
+		for (int i = 0; i < numDeposits; i++) {
+			Vector2 randomPosition = RandomBoardPosition (); 
+			Instantiate (deposit, randomPosition, Quaternion.identity); 
+
+			MineralDeposit mineralDeposit = new MineralDeposit (); 
+			mineralDepositsOnBoard.Add (randomPosition, mineralDeposit); 
+		}
+	}
+
 	// Update is called once per frame
 	void Update () {
 	
