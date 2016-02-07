@@ -5,8 +5,8 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour {
 
 	public static GameManager instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
-
 	private GameObject mainCamera; 
+	private GameObject mainPlayer; 
 
 	void Awake()
 	{
@@ -33,10 +33,13 @@ public class GameManager : MonoBehaviour {
 		mainCamera = GameObject.Find("Main Camera"); 
 		int boardCenter = (BoardManager.instance.GetBoardSize ())/2;
 		mainCamera.transform.position = new Vector3 (boardCenter, boardCenter, -10);
+
+		mainPlayer = GameObject.Find ("MainPlayer");
 	}
 	
 	// Update is called once per frame
 	void Update () {
 	
+//		mainCamera.transform.position = new Vector3 (mainPlayer.transform.position.x, mainPlayer.transform.position.y, -10); 
 	}
 }

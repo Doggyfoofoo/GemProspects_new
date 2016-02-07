@@ -22,52 +22,9 @@ public class BoardManager : MonoBehaviour {
 	private GameObject[,] boardTiles = new GameObject[boardSize, boardSize];
 	private GameObject[,] fogTiles = new GameObject[boardSize, boardSize];
 
-	private Dictionary<Vector2, MineralDeposit> mineralDepositsOnBoard = new Dictionary<Vector2, MineralDeposit>(); 
+	private Dictionary<Vector2, GameObject> mineralDepositsOnBoard = new Dictionary<Vector2, GameObject>(); 
 
-	enum Gems {emerald, ruby, sapphire, amethyst, citrine, opal, topaz, morganite}; 
 
-	public class MineralDeposit
-	{
-		public int GemType = -1;
-		Player owner = null; 
-		bool hasMine = false; 
-		bool isOperational = false; //being mined by miners
-
-		public MineralDeposit(){
-			GemType = (int) Random.Range(0, System.Enum.GetNames(typeof(Gems)).Length);
-		}
-
-		public void SetOwner(Player newOwner){
-			owner = newOwner; 
-		}
-
-		public Player GetOwner(){
-			return owner; 
-		}
-
-		public void BuildMine(){
-			hasMine = true; 
-		}
-
-		public bool OpenMine(){
-			if (hasMine == false) {
-				return false; 
-			} else {
-				isOperational = true; 
-				return true;
-			}
-		}
-
-		public bool CloseMine(){
-			if (isOperational == false) {
-				return false; 
-			} else {
-				isOperational = true; 
-				return true; 
-			}
-		}
-	}
-		
 	public int  GetBoardSize(){
 		return boardSize;
 	}
@@ -158,12 +115,10 @@ public class BoardManager : MonoBehaviour {
 
 		for (int i = 0; i < numDeposits; i++) {
 			Vector2 randomPosition = RandomBoardPosition (); 
-			GameObject instance = Instantiate (deposit, randomPosition, Quaternion.identity) as GameObject; 
+			GameObject instance = (GameObject) Instantiate (deposit, randomPosition, Quaternion.identity); 
 
 			instance.transform.SetParent (boardHolder); 
-
-			MineralDeposit mineralDeposit = new MineralDeposit (); 
-			mineralDepositsOnBoard.Add (randomPosition, mineralDeposit);
+			mineralDepositsOnBoard.Add (randomPosition, instance);
 
 		}
 	}

@@ -1,12 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Gems : MonoBehaviour
+
+public enum GemTypes {emerald, ruby, sapphire, amethyst, citrine, opal, topaz, morganite}; 
+
+public class Gem : ScriptableObject
 {
 
 	private float gemSize = 0;
 	// in Carats
 	private float gemValue = 0;
+	private int gemType = 0; 
 
 
 	public float GetGemSize ()
@@ -17,6 +21,17 @@ public class Gems : MonoBehaviour
 	public float GetGemValue ()
 	{
 		return (float)System.Math.Round (gemValue, 2);
+	}
+
+	public int GetGemType()
+	{
+		return gemType; 
+	}
+
+	public Gem Init(int gemtype)
+	{
+		gemType = gemtype; 
+		return this; 
 	}
 
 	// Use this for initialization
